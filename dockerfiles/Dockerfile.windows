@@ -8,7 +8,7 @@ FROM mcr.microsoft.com/windows/servercore:$WINDOWS_VERSION as builder
 ENV OPENSSL_VERSION 1.1.0.60000000
 ENV chocolateyUseWindowsCompression false
 
-RUN setx /M PATH "%PATH%;C:\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\WinFlexBison"
+RUN setx /M PATH "%PATH%;C:\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\WinFlexBison;C:Program Files\OpenSSL\bin"
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
@@ -48,12 +48,13 @@ COPY . /src/
 
 RUN iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')); `
     choco feature disable --name showDownloadProgress ; `
-    choco install -y openssl.light --version $env:OPENSSL_VERSION;`
-    Copy-Item -Path Files/OpenSSL/ -Destination /src/build/;
+    choco install -y openssl.light --version $env:OPENSSL_VERSION;
+    # Copy-Item -Path Files/OpenSSL/ -Destination /src/build/;
 
-RUN cmake -G "'Visual Studio 16 2019'" -DCMAKE_BUILD_TYPE=Release -DOPENSSL_ROOT_DIR='/OpenSSL' ../; `
+RUN cmake -G "'Visual Studio 16 2019'" -DCMAKE_BUILD_TYPE=Release  ../; ` 
     cmake --build . --config Release; 
     
+#-DOPENSSL_ROOT_DIR='/OpenSSL'
 
 # Set up config files and binaries in single /fluent-bit hierarchy for easy copy in later stage
 RUN New-Item -Path  /fluent-bit/etc/ -ItemType "directory"; `
