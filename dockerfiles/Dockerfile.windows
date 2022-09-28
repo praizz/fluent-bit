@@ -13,10 +13,20 @@ FROM mcr.microsoft.com/windows/servercore:$WINDOWS_VERSION as builder
 
 # add proxy to powershell profile for all users
 # Install Chocolatey
-RUN powershell -ExecutionPolicy unrestricted -Command `
-    iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-SHELL ["cmd", "/S", "/C"] 
-RUN choco install openssl
+# RUN powershell -ExecutionPolicy unrestricted -Command `
+#     iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+# SHELL ["cmd", "/S", "/C"] 
+# RUN choco install openssl
+
+
+ENV OPENSSL_VERSION 1.1.0.60000000
+ENV chocolateyUseWindowsCompression false
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+RUN iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')); `
+    choco feature disable --name showDownloadProgress ; `
+    choco install -y openssl.light --version $env:OPENSSL_VERSION
+
 
 
 RUN setx /M PATH "%PATH%;C:\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\WinFlexBison"
