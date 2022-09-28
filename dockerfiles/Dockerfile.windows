@@ -64,9 +64,9 @@ RUN Start-Process /local/vc_redist.x64.exe -ArgumentList '/install', '/quiet', '
 WORKDIR /src/build
 COPY . /src/
 
-RUN cmake -G "'Visual Studio 16 2019'" -DCMAKE_BUILD_TYPE=Release ../; `
+RUN cmake -G "'Visual Studio 16 2019'" -DCMAKE_BUILD_TYPE=Release -DOPENSSL_ROOT_DIR='C:\Program Files\OpenSSL' ../; `
     cmake --build . --config Release; 
-    # -DOPENSSL_ROOT_DIR=;
+    
 
 # Set up config files and binaries in single /fluent-bit hierarchy for easy copy in later stage
 RUN New-Item -Path  /fluent-bit/etc/ -ItemType "directory"; `
