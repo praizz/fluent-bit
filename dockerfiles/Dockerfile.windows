@@ -62,9 +62,9 @@ COPY . /src/
 #     Get-Item "/src/build";`
 #     Get-Item "/src/build/OpenSSL";
 
-RUN iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')); `
-    choco feature disable --name showDownloadProgress ; `
-    choco install -y openssl.light --version $env:OPENSSL_VERSION;
+# RUN iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')); `
+#     choco feature disable --name showDownloadProgress ; `
+#     choco install -y openssl.light --version $env:OPENSSL_VERSION;
 
 RUN cmake -G "'Visual Studio 16 2019'" -DCMAKE_BUILD_TYPE=Release -DOPENSSL_ROOT_DIR="/Program Files/OpenSSL-Win64" -DOPENSSL_CONF='C:\Program Files\OpenSSL-Win64\bin\openssl.cfg'  ../; ` 
     cmake --build . --config Release; 
