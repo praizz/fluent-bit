@@ -15,9 +15,9 @@ SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPref
 WORKDIR /local
 ADD https://slproweb.com/download/Win64OpenSSL-3_0_5.exe /local/Win64OpenSSL.exe
 
-RUN Start-Process /local/Win64OpenSSL.exe `
-    -ArgumentList '--quiet ', '--wait ', '--norestart ', '--nocache', `
-    '--installPath C:\Program Files\OpenSSL-Win64\';
+RUN /local/Win64OpenSSL.exe 
+    # -ArgumentList '--quiet ', '--wait ', '--norestart ', '--nocache', `
+    # '--installPath C:\Program Files\OpenSSL-Win64\';
 
 
 WORKDIR /local
