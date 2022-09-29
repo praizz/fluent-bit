@@ -533,11 +533,13 @@ if(FLB_TLS)
   if (FLB_SYSTEM_WINDOWS)
     set(OPENSSL_USE_STATIC_LIBS ON)
     set(OPENSSL_MSVC_STATIC_RT  ON)
+    set(OPENSSL_ROOT_DIR "/Program Files/OpenSSL")
   endif()
 
   # find OpenSSL (our preferred choice now)
   find_package(OpenSSL)
   if(OPENSSL_FOUND)
+    set(OPENSSL_ROOT_DIR "/Program Files/OpenSSL") #added
     FLB_DEFINITION(FLB_HAVE_OPENSSL)
   endif()
 endif()

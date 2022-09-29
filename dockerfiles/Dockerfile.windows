@@ -5,6 +5,9 @@ ARG WINDOWS_VERSION=ltsc2019
 # Builder Image - Windows Server Core
 FROM mcr.microsoft.com/windows/servercore:$WINDOWS_VERSION as builder
 
+ENV OPENSSL_VERSION 1.1.0.60000000
+ENV chocolateyUseWindowsCompression false
+
 RUN setx /M PATH "%PATH%;C:\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\WinFlexBison"
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
@@ -42,7 +45,12 @@ RUN Start-Process /local/vc_redist.x64.exe -ArgumentList '/install', '/quiet', '
 WORKDIR /src/build
 COPY . /src/
 
-RUN cmake -G "'Visual Studio 16 2019'" -DCMAKE_BUILD_TYPE=Release ../; `
+
+RUN iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')); `
+    choco feature disable --name showDownloadProgress ; `
+    choco install -y openssl.light --version $env:OPENSSL_VERSION;
+
+RUN cmake -G "'Visual Studio 16 2019'" -DCMAKE_BUILD_TYPE=Release -DOPENSSL_ROOT_DIR="/Program Files/OpenSSL"../; `
     cmake --build . --config Release;
 
 # Set up config files and binaries in single /fluent-bit hierarchy for easy copy in later stage
