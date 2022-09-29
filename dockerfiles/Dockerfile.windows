@@ -5,12 +5,20 @@ ARG WINDOWS_VERSION=ltsc2019
 # Builder Image - Windows Server Core
 FROM mcr.microsoft.com/windows/servercore:$WINDOWS_VERSION as builder
 
-ENV OPENSSL_VERSION 1.1.0.60000000
-ENV chocolateyUseWindowsCompression false
+# ENV OPENSSL_VERSION 1.1.0.60000000
+# ENV chocolateyUseWindowsCompression false
 
-RUN setx /M PATH "%PATH%;C:\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\WinFlexBison;C:\Program Files\OpenSSL\bin"
+RUN setx /M PATH "%PATH%;C:\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\WinFlexBison;C:\Program Files\OpenSSL-Win64\bin"
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+WORKDIR /local
+ADD https://slproweb.com/download/Win64OpenSSL-3_0_5.exe /local/Win64OpenSSL.exe
+
+RUN Start-Process /local/Win64OpenSSL.exe `
+    -ArgumentList '--quiet ', '--wait ', '--norestart ', '--nocache', `
+    '--installPath C:\Program Files\OpenSSL-Win64\';
+
 
 WORKDIR /local
 
@@ -58,10 +66,10 @@ RUN iex ((new-object net.webclient).DownloadString('https://chocolatey.org/insta
     choco feature disable --name showDownloadProgress ; `
     choco install -y openssl.light --version $env:OPENSSL_VERSION;
 
-RUN cmake -G "'Visual Studio 16 2019'" -DCMAKE_BUILD_TYPE=Release -DOPENSSL_ROOT_DIR="/Program Files/OpenSSL" ../; ` 
+RUN cmake -G "'Visual Studio 16 2019'" -DCMAKE_BUILD_TYPE=Release -DOPENSSL_ROOT_DIR="/Program Files/OpenSSL-Win64" -DOPENSSL_CONF='C:\Program Files\OpenSSL-Win64\bin\openssl.cfg'  ../; ` 
     cmake --build . --config Release; 
     
-#-DOPENSSL_ROOT_DIR='/OpenSSL'
+
 
 # Set up config files and binaries in single /fluent-bit hierarchy for easy copy in later stage
 RUN New-Item -Path  /fluent-bit/etc/ -ItemType "directory"; `
