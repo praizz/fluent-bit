@@ -8,11 +8,19 @@ FROM mcr.microsoft.com/windows/servercore:$WINDOWS_VERSION as builder
 ENV OPENSSL_VERSION 1.1.0.60000000
 ENV chocolateyUseWindowsCompression false
 
-RUN setx /M PATH "%PATH%;C:\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\WinFlexBison;C:Program Files\OpenSSL\bin"
+RUN setx /M PATH "%PATH%;C:\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;C:\WinFlexBison;C:\Program Files\OpenSSL\bin"
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
 WORKDIR /local
+
+RUN iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')); `
+    choco feature disable --name showDownloadProgress ; `
+    choco install -y openssl.light --version $env:OPENSSL_VERSION;`
+    Get-Item '/Program Files/OpenSSL';`
+    Copy-Item -Path '/Program Files/OpenSSL' -Destination /src/build/;`
+    Get-Item '/src/build';`
+    Get-Item '/src/build/OpenSSL';
 
 # Install Visual Studio 2019
 ADD https://aka.ms/vs/16/release/vs_buildtools.exe /local/vs_buildtools.exe
@@ -46,13 +54,13 @@ RUN Start-Process /local/vc_redist.x64.exe -ArgumentList '/install', '/quiet', '
 WORKDIR /src/build
 COPY . /src/
 
-RUN iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')); `
-    choco feature disable --name showDownloadProgress ; `
-    choco install -y openssl.light --version $env:OPENSSL_VERSION;`
-    Get-Item "/Program Files/OpenSSL";`
-    Copy-Item -Path "/Program Files/OpenSSL" -Destination /src/build/;`
-    Get-Item "/src/build";`
-    Get-Item "/src/build/OpenSSL";
+# RUN iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')); `
+#     choco feature disable --name showDownloadProgress ; `
+#     choco install -y openssl.light --version $env:OPENSSL_VERSION;`
+#     Get-Item "/Program Files/OpenSSL";`
+#     Copy-Item -Path "/Program Files/OpenSSL" -Destination /src/build/;`
+#     Get-Item "/src/build";`
+#     Get-Item "/src/build/OpenSSL";
 
 
 RUN cmake -G "'Visual Studio 16 2019'" -DCMAKE_BUILD_TYPE=Release -DOPENSSL_ROOT_DIR="/Program Files/OpenSSL" ../; ` 
