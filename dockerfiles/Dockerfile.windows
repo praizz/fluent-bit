@@ -51,7 +51,7 @@ RUN iex ((new-object net.webclient).DownloadString('https://chocolatey.org/insta
     choco install -y openssl.light --version $env:OPENSSL_VERSION;
     # Copy-Item -Path Files/OpenSSL/ -Destination /src/build/;
 
-RUN cmake -G "'Visual Studio 16 2019'" -DCMAKE_BUILD_TYPE=Release  ../; ` 
+RUN cmake -G "'Visual Studio 16 2019'" -DCMAKE_BUILD_TYPE=Release -DOPENSSL_ROOT_DIR="C:Program Files\OpenSSL\bin" ../; ` 
     cmake --build . --config Release; 
     
 #-DOPENSSL_ROOT_DIR='/OpenSSL'
