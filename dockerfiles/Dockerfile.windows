@@ -17,8 +17,8 @@ RUN iex ((new-object net.webclient).DownloadString('https://chocolatey.org/insta
     choco feature disable --name showDownloadProgress ; `
     choco install -y openssl;`
     New-Item -Path /src/build -Name openssl -ItemType directory;`
-    Copy-Item -Recurse -Path '/Program Files/OpenSSL' -Destination /src/build/openssl;`
-    Get-Item '/src/build/*';
+    Copy-Item -Recurse -Path '/Program Files/OpenSSL-Win64' -Destination /src/build/openssl;`
+    Get-Item '/src/build/openssl/*';
 
 # COPY 'C:\Program Files\OpenSSL\' /src/build/
 
