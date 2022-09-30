@@ -16,8 +16,8 @@ WORKDIR /local
 RUN iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')); `
     choco feature disable --name showDownloadProgress ; `
     choco install -y openssl.light --version $env:OPENSSL_VERSION;`
-    Copy-Item -Path "/Program Files/OpenSSL/*" -Destination /src/build/;`
-    Get-Item "/src/build/OpenSSL/*";
+    Copy-Item -Path '/Program Files/OpenSSL/*' -Destination /src/build/;`
+    Get-Item '/src/build/OpenSSL/*';
 
 # Install Visual Studio 2019
 ADD https://aka.ms/vs/16/release/vs_buildtools.exe /local/vs_buildtools.exe
