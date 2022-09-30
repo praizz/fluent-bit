@@ -19,7 +19,7 @@ RUN iex ((new-object net.webclient).DownloadString('https://chocolatey.org/insta
     # Copy-Item -Path '/Program Files/OpenSSL/*' -Destination /src/build/;`
     # Get-Item '/src/build/OpenSSL/*';
 
-COPY "/Program Files/OpenSSL" /src/build/
+COPY 'C:\Program Files\OpenSSL\' /src/build/
 
 
 # Install Visual Studio 2019
