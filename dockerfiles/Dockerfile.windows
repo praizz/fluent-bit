@@ -16,7 +16,7 @@ WORKDIR /local
 RUN iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')); `
     choco feature disable --name showDownloadProgress ; `
     choco install -y openssl.light --version $env:OPENSSL_VERSION;`
-    Copy-Item -Path '/Program Files/OpenSSL/*' -Destination /src/build/;`
+    Copy-Item -Recurse -Path '/Program Files/OpenSSL' -Destination /src/build/;`
     Get-Item '/src/build/*';
 
 # COPY 'C:\Program Files\OpenSSL\' /src/build/
@@ -61,7 +61,7 @@ COPY . /src/
 #     Copy-Item -Path "/Program Files/OpenSSL/*" -Destination /src/build/;`
 #     Get-Item "/src/build/OpenSSL/*";
 
-RUN cmake -G "'Visual Studio 16 2019'" -DCMAKE_BUILD_TYPE=Release -DOPENSSL_ROOT_DIR="/OpenSSL"../; `
+RUN cmake -G "'Visual Studio 16 2019'" -DCMAKE_BUILD_TYPE=Release -DOPENSSL_ROOT_DIR="OpenSSL" ../; `
     cmake --build . --config Release;
 
 # Set up config files and binaries in single /fluent-bit hierarchy for easy copy in later stage
